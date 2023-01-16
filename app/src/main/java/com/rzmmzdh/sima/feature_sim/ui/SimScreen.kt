@@ -95,7 +95,7 @@ private fun Sims(
     val context = LocalContext.current
     var sims by remember {
         mutableStateOf(
-            SimInfoUiState(
+            SimStatusUiState(
                 data = getSimStatus(
                     isPermissionGranted = isPermissionGranted,
                     context = context,
@@ -279,9 +279,9 @@ private fun SelectSimFab(onClick: () -> Unit) {
 private fun getSimStatus(
     isPermissionGranted: Boolean,
     context: Context,
-): SimInfoUiState {
+): SimStatusUiState {
     val activeSims = mutableListOf<Sim>()
-    var simInfo = SimInfoUiState()
+    var simStatus = SimStatusUiState()
     val subscriptionManager =
         context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
     val telephonyManager =
@@ -302,11 +302,9 @@ private fun getSimStatus(
                 )
             )
         }
-        simInfo = SimInfoUiState(activeSims)
+        simStatus = SimStatusUiState(activeSims)
     }
-    return simInfo
+    return simStatus
 }
 
 private fun asuSignalToDbm(asuLevel: Int) = (asuLevel * 2) - 113
-
-data class SimInfoUiState(val data: List<Sim> = emptyList(), val isLoading: Boolean = false)
