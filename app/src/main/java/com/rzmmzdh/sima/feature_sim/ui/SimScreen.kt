@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import android.telephony.CellSignalStrength
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,17 +49,24 @@ fun SimScreen(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { SimaAppBar() },
-        floatingActionButton = { SelectSimFab(context) }) { paddingValues ->
+        floatingActionButton = {
+            SelectSimFab {
+                context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS))
+            }
+        }) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
             AnimatedVisibility(visible = readPhoneStatePermission.status.isGranted) {
-                Sims(permissionState = readPhoneStatePermission, paddingValues = paddingValues)
+                Sims(
+                    isPermissionGranted = readPhoneStatePermission.status.isGranted,
+                    paddingValues = paddingValues
+                )
             }
             AnimatedVisibility(visible = readPhoneStatePermission.status.shouldShowRationale) {
-                GrantPermissionRationale(readPhoneStatePermission)
+                GrantPermissionRationale { readPhoneStatePermission.launchPermissionRequest() }
             }
         }
     }
@@ -83,9 +88,8 @@ private fun SimaAppBar() {
 }
 
 @Composable
-@OptIn(ExperimentalPermissionsApi::class)
 private fun Sims(
-    permissionState: PermissionState,
+    isPermissionGranted: Boolean,
     paddingValues: PaddingValues,
 ) {
     val context = LocalContext.current
@@ -93,7 +97,7 @@ private fun Sims(
         mutableStateOf(
             SimInfoUiState(
                 data = getSimStatus(
-                    permissionState,
+                    isPermissionGranted = isPermissionGranted,
                     context = context,
                 ).data
             )
@@ -103,7 +107,12 @@ private fun Sims(
         val getSimInfoPeriodicService = Executors.newSingleThreadScheduledExecutor()
         getSimInfoPeriodicService.scheduleAtFixedRate(
             {
-                sims = sims.copy(data = getSimStatus(permissionState, context).data)
+                sims = sims.copy(
+                    data = getSimStatus(
+                        isPermissionGranted = isPermissionGranted,
+                        context = context
+                    ).data
+                )
             },
             0,
             2,
@@ -114,7 +123,7 @@ private fun Sims(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = paddingValues.calculateTopPadding()),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         items(sims.data) { sim ->
@@ -127,7 +136,7 @@ private fun Sims(
                     .fillMaxWidth()
                     .padding(8.dp)
                     .height(136.dp),
-                shape = CutCornerShape(topStart = 24.dp),
+                shape = CutCornerShape(bottomStart = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = topSimBackgroundColor)
             ) {
                 Row(
@@ -143,20 +152,20 @@ private fun Sims(
                             verticalArrangement = Center,
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            SignalStrength(it)
+                            SignalStrength(it.signalStrength)
                         }
                         Column(
                             modifier = Modifier.fillMaxHeight(),
                             verticalArrangement = Center,
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            Carrier(it)
+                            Carrier(it.carrierName)
                         }
                         Column(
                             verticalArrangement = Center,
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            SlotNumber(it)
+                            SlotNumber(it.slotNumber)
                             AnimatedVisibility(visible = (it == topSim)) {
                                 TopSimStar()
                             }
@@ -170,9 +179,9 @@ private fun Sims(
 }
 
 @Composable
-private fun SlotNumber(sim: Sim) {
+private fun SlotNumber(number: Int) {
     Text(
-        sim.slotNumber.toString(),
+        number.toString(),
         style = TextStyle(
             fontFamily = vazir,
             fontWeight = FontWeight.Bold,
@@ -182,9 +191,9 @@ private fun SlotNumber(sim: Sim) {
 }
 
 @Composable
-private fun Carrier(sim: Sim) {
+private fun Carrier(name: String) {
     Text(
-        sim.carrierName,
+        name,
         style = TextStyle(
             textDirection = TextDirection.Rtl,
             fontFamily = vazir,
@@ -194,17 +203,17 @@ private fun Carrier(sim: Sim) {
 }
 
 @Composable
-private fun SignalStrength(sim: Sim) {
+private fun SignalStrength(value: Int?) {
     Text(
         modifier = Modifier
             .border(
                 border = BorderStroke(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                ), shape = RoundedCornerShape(16.dp)
+                ), shape = CutCornerShape(topStart = 16.dp)
             )
             .padding(8.dp),
-        text = "${sim.signalStrength}\n dBm",
+        text = "${value}\n dBm",
         style = TextStyle(
             textDirection = TextDirection.Ltr,
             fontFamily = vazir,
@@ -227,9 +236,8 @@ private fun TopSimStar() {
     )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun GrantPermissionRationale(readPhoneStatePermission: PermissionState) {
+private fun GrantPermissionRationale(onGrantPermission: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Center,
@@ -244,7 +252,7 @@ private fun GrantPermissionRationale(readPhoneStatePermission: PermissionState) 
             )
         )
         Button(
-            onClick = { readPhoneStatePermission.launchPermissionRequest() },
+            onClick = { onGrantPermission() },
             modifier = Modifier.padding(8.dp)
         ) {
             Text(stringResource(R.string.grant_permission))
@@ -253,11 +261,9 @@ private fun GrantPermissionRationale(readPhoneStatePermission: PermissionState) 
 }
 
 @Composable
-private fun SelectSimFab(context: Context) {
-    ExtendedFloatingActionButton(shape = CutCornerShape(topStart = 16.dp),
-        onClick = {
-            context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS))
-        },
+private fun SelectSimFab(onClick: () -> Unit) {
+    ExtendedFloatingActionButton(shape = CutCornerShape(bottomStart = 20.dp),
+        onClick = { onClick() },
         icon = { },
         text = {
             Text(
@@ -270,9 +276,8 @@ private fun SelectSimFab(context: Context) {
 }
 
 @SuppressLint("MissingPermission")
-@OptIn(ExperimentalPermissionsApi::class)
 private fun getSimStatus(
-    permissionState: PermissionState,
+    isPermissionGranted: Boolean,
     context: Context,
 ): SimInfoUiState {
     val activeSims = mutableListOf<Sim>()
@@ -281,7 +286,7 @@ private fun getSimStatus(
         context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
     val telephonyManager =
         context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    if (permissionState.status.isGranted) {
+    if (isPermissionGranted) {
         val subList =
             subscriptionManager.activeSubscriptionInfoList
         for (sub in subList) {
@@ -292,7 +297,7 @@ private fun getSimStatus(
                     carrierName = sub.carrierName.toString(),
                     signalStrength = telephonyManager.createForSubscriptionId
                         (sub.subscriptionId).signalStrength?.cellSignalStrengths?.firstNotNullOf {
-                        asuSignalToDbm(it)
+                        asuSignalToDbm(it.asuLevel)
                     }
                 )
             )
@@ -302,6 +307,6 @@ private fun getSimStatus(
     return simInfo
 }
 
-private fun asuSignalToDbm(signalStrength: CellSignalStrength) = (signalStrength.asuLevel * 2) - 113
+private fun asuSignalToDbm(asuLevel: Int) = (asuLevel * 2) - 113
 
 data class SimInfoUiState(val data: List<Sim> = emptyList(), val isLoading: Boolean = false)
