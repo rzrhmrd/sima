@@ -96,7 +96,7 @@ private fun Sims(
     var sims by remember {
         mutableStateOf(
             SimStatusUiState(
-                data = getSimStatus(
+                data = simStatus(
                     isPermissionGranted = isPermissionGranted,
                     context = context,
                 ).data
@@ -106,11 +106,11 @@ private fun Sims(
     LaunchedEffect(key1 = sims) {
         val initialDelay: Long = 0
         val refreshRate: Long = 2
-        val getSimInfoPeriodicService = Executors.newSingleThreadScheduledExecutor()
-        getSimInfoPeriodicService.scheduleAtFixedRate(
+        val simStatusPeriodicService = Executors.newSingleThreadScheduledExecutor()
+        simStatusPeriodicService.scheduleAtFixedRate(
             {
                 sims = sims.copy(
-                    data = getSimStatus(
+                    data = simStatus(
                         isPermissionGranted = isPermissionGranted,
                         context = context
                     ).data
@@ -278,7 +278,7 @@ private fun SelectSimFab(onClick: () -> Unit) {
 }
 
 @SuppressLint("MissingPermission")
-private fun getSimStatus(
+private fun simStatus(
     isPermissionGranted: Boolean,
     context: Context,
 ): SimStatusUiState {
@@ -299,14 +299,14 @@ private fun getSimStatus(
                     carrierName = sub.carrierName.toString(),
                     signalStrength = telephonyManager.createForSubscriptionId
                         (sub.subscriptionId).signalStrength?.cellSignalStrengths?.firstNotNullOf {
-                        asuSignalToDbm(it.asuLevel)
+                        asuLevelToDbm(it.asuLevel)
                     }
                 )
             )
         }
-        simStatus = SimStatusUiState(activeSims)
+        simStatus = simStatus.copy(data = activeSims)
     }
     return simStatus
 }
 
-private fun asuSignalToDbm(asuLevel: Int) = (asuLevel * 2) - 113
+private fun asuLevelToDbm(asuLevel: Int) = (asuLevel * 2) - 113
