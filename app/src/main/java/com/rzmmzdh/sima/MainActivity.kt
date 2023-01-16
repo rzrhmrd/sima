@@ -19,6 +19,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.rzmmzdh.sima.feature_sim.core.theme.SimaTheme
+import com.rzmmzdh.sima.feature_sim.ui.Destination
 import com.rzmmzdh.sima.feature_sim.ui.SimScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,9 +47,12 @@ class MainActivity : ComponentActivity() {
                     }
 
 
-                    NavHost(navController = navController, startDestination = "SIM_SCREEN") {
-                        composable(route = "SIM_SCREEN") {
-                            SimScreen(phonePermissionState = permissionState)
+                    NavHost(
+                        navController = navController,
+                        startDestination = Destination.SimScreen.route
+                    ) {
+                        composable(route = Destination.SimScreen.route) {
+                            SimScreen(readPhoneStatePermission = permissionState)
                         }
                     }
                 }
