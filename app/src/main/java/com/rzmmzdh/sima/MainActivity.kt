@@ -18,6 +18,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.rzmmzdh.sima.feature_sim.core.theme.SimaTheme
 import com.rzmmzdh.sima.feature_sim.ui.Destination
 import com.rzmmzdh.sima.feature_sim.ui.SimScreen
@@ -26,8 +29,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @OptIn(ExperimentalPermissionsApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var analytics: FirebaseAnalytics
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initFirebase()
         setContent {
             val navController = rememberNavController()
             val readPhoneStatePermission =
@@ -59,6 +64,10 @@ class MainActivity : ComponentActivity() {
                 TransparentSystemUiBars()
             }
         }
+    }
+
+    private fun initFirebase() {
+        analytics = Firebase.analytics
     }
 
     @Composable
