@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -238,7 +240,7 @@ private fun TopSimStar() {
         style = TextStyle(
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
-            fontFamily = vazir
+            fontFamily = vazir, shadow = Shadow(blurRadius = 0.5f)
         )
     )
 }
