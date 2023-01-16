@@ -19,6 +19,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -177,6 +179,9 @@ private fun Sims(
             }
 
         }
+        item {
+            Description()
+        }
     }
 }
 
@@ -234,6 +239,23 @@ private fun TopSimStar() {
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
             fontFamily = vazir
+        )
+    )
+}
+
+@Composable
+private fun Description() {
+    Text(
+        text = stringResource(R.string.description),
+        modifier = Modifier
+            .padding(16.dp)
+            .alpha(0.5f),
+        textAlign = TextAlign.Center,
+        style = TextStyle(
+            textDirection = TextDirection.Rtl,
+            fontFamily = vazir,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
         )
     )
 }
