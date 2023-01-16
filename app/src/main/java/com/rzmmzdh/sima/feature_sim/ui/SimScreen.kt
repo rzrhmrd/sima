@@ -47,69 +47,36 @@ fun SimScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier,
-                title = {
-                    Text(
-                        stringResource(R.string.sima),
-                        fontFamily = vazir,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 24.sp
-                    )
-                })
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(shape = CutCornerShape(topStart = 16.dp),
-                onClick = {
-                    context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS))
-                },
-                icon = { },
-                text = {
-                    Text(
-                        text = stringResource(R.string.select_sim),
-                        fontFamily = vazir,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal
-                    )
-                })
-        }) { paddingValues ->
+        topBar = { SimaAppBar() },
+        floatingActionButton = { SelectSimFab(context) }) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-
             AnimatedVisibility(visible = readPhoneStatePermission.status.isGranted) {
-                Sims(
-                    permissionState = readPhoneStatePermission,
-                    paddingValues = paddingValues,
-                )
+                Sims(permissionState = readPhoneStatePermission, paddingValues = paddingValues)
             }
             AnimatedVisibility(visible = readPhoneStatePermission.status.shouldShowRationale) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Center,
-                    horizontalAlignment = CenterHorizontally,
-                ) {
-                    Text(
-                        stringResource(R.string.permission_rationale),
-                        style = TextStyle(
-                            textDirection = TextDirection.Rtl,
-                            fontFamily = vazir,
-                            fontSize = 16.sp
-                        )
-                    )
-                    Button(
-                        onClick = { readPhoneStatePermission.launchPermissionRequest() },
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        Text(stringResource(R.string.grant_permission))
-                    }
-                }
+                GrantPermissionRationale(readPhoneStatePermission)
             }
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun SimaAppBar() {
+    CenterAlignedTopAppBar(
+        modifier = Modifier,
+        title = {
+            Text(
+                stringResource(R.string.sima),
+                fontFamily = vazir,
+                fontWeight = FontWeight.Black,
+                fontSize = 24.sp
+            )
+        })
 }
 
 @Composable
@@ -121,8 +88,8 @@ private fun Sims(
     val context = LocalContext.current
     var sims by remember {
         mutableStateOf(
-            SimInfo(
-                data = getSimInfo(
+            SimInfoUiState(
+                data = getSimStatus(
                     permissionState,
                     context = context,
                 ).data
@@ -133,7 +100,7 @@ private fun Sims(
         val getSimInfoPeriodicService = Executors.newSingleThreadScheduledExecutor()
         getSimInfoPeriodicService.scheduleAtFixedRate(
             {
-                sims = sims.copy(data = getSimInfo(permissionState, context).data)
+                sims = sims.copy(data = getSimStatus(permissionState, context).data)
             },
             0,
             2,
@@ -173,54 +140,22 @@ private fun Sims(
                             verticalArrangement = Center,
                             horizontalAlignment = CenterHorizontally
                         ) {
-
-                            Text(
-                                modifier = Modifier,
-                                text = "${sim.signalStrength}\n dBm",
-                                style = TextStyle(
-                                    textDirection = TextDirection.Ltr,
-                                    fontFamily = vazir,
-                                    fontSize = 16.sp,
-                                ), textAlign = TextAlign.Center
-
-                            )
+                            SignalStrength(it)
                         }
                         Column(
                             modifier = Modifier.fillMaxHeight(),
                             verticalArrangement = Center,
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            Text(
-                                sim.carrierName,
-                                style = TextStyle(
-                                    textDirection = TextDirection.Rtl,
-                                    fontFamily = vazir,
-                                    fontSize = 16.sp
-                                )
-                            )
+                            Carrier(it)
                         }
                         Column(
                             verticalArrangement = Center,
                             horizontalAlignment = CenterHorizontally
                         ) {
-                            Text(
-                                sim.slotNumber.toString(),
-                                style = TextStyle(
-                                    fontFamily = vazir,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 22.sp
-                                )
-                            )
+                            SlotNumber(it)
                             AnimatedVisibility(visible = (it == topSim)) {
-                                Text(
-                                    modifier = Modifier,
-                                    text = "⭐",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        fontFamily = vazir
-                                    )
-                                )
+                                TopSimStar()
                             }
                         }
                     }
@@ -231,14 +166,107 @@ private fun Sims(
     }
 }
 
+@Composable
+private fun SlotNumber(sim: Sim) {
+    Text(
+        sim.slotNumber.toString(),
+        style = TextStyle(
+            fontFamily = vazir,
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp
+        )
+    )
+}
+
+@Composable
+private fun Carrier(sim: Sim) {
+    Text(
+        sim.carrierName,
+        style = TextStyle(
+            textDirection = TextDirection.Rtl,
+            fontFamily = vazir,
+            fontSize = 16.sp
+        )
+    )
+}
+
+@Composable
+private fun SignalStrength(sim: Sim) {
+    Text(
+        modifier = Modifier,
+        text = "${sim.signalStrength}\n dBm",
+        style = TextStyle(
+            textDirection = TextDirection.Ltr,
+            fontFamily = vazir,
+            fontSize = 16.sp,
+        ), textAlign = TextAlign.Center
+
+    )
+}
+
+@Composable
+private fun TopSimStar() {
+    Text(
+        modifier = Modifier,
+        text = "⭐",
+        style = TextStyle(
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            fontFamily = vazir
+        )
+    )
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun GrantPermissionRationale(readPhoneStatePermission: PermissionState) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Center,
+        horizontalAlignment = CenterHorizontally,
+    ) {
+        Text(
+            stringResource(R.string.permission_rationale),
+            style = TextStyle(
+                textDirection = TextDirection.Rtl,
+                fontFamily = vazir,
+                fontSize = 16.sp
+            )
+        )
+        Button(
+            onClick = { readPhoneStatePermission.launchPermissionRequest() },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(stringResource(R.string.grant_permission))
+        }
+    }
+}
+
+@Composable
+private fun SelectSimFab(context: Context) {
+    ExtendedFloatingActionButton(shape = CutCornerShape(topStart = 16.dp),
+        onClick = {
+            context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS))
+        },
+        icon = { },
+        text = {
+            Text(
+                text = stringResource(R.string.select_sim),
+                fontFamily = vazir,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            )
+        })
+}
+
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalPermissionsApi::class)
-private fun getSimInfo(
+private fun getSimStatus(
     permissionState: PermissionState,
     context: Context,
-): SimInfo {
+): SimInfoUiState {
     val activeSims = mutableListOf<Sim>()
-    var simInfo = SimInfo()
+    var simInfo = SimInfoUiState()
     val subscriptionManager =
         context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
     val telephonyManager =
@@ -259,17 +287,11 @@ private fun getSimInfo(
                 )
             )
         }
-        simInfo = SimInfo(activeSims)
+        simInfo = SimInfoUiState(activeSims)
     }
     return simInfo
 }
 
 private fun asuSignalToDbm(signalStrength: CellSignalStrength) = (signalStrength.asuLevel * 2) - 113
 
-data class SimInfo(val data: List<Sim> = emptyList(), val isLoading: Boolean = false)
-data class Sim(
-    val subId: Int = 0,
-    var slotNumber: Int = 0,
-    val carrierName: String = "Carrier",
-    var signalStrength: Int? = 0
-)
+data class SimInfoUiState(val data: List<Sim> = emptyList(), val isLoading: Boolean = false)

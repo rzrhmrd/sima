@@ -56,13 +56,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                HideSystemUi()
+                SetSystemUiBarsAsTransparent()
             }
         }
     }
 
     @Composable
-    private fun HideSystemUi() {
+    private fun SetSystemUiBarsAsTransparent() {
         val systemUiController = rememberSystemUiController()
         val useDarkIcons = !isSystemInDarkTheme()
 
