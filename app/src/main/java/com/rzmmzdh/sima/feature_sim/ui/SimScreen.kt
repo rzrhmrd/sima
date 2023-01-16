@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 import com.rzmmzdh.sima.R
 import com.rzmmzdh.sima.feature_sim.core.theme.vazir
 import java.util.*
@@ -38,7 +39,7 @@ import java.util.concurrent.TimeUnit
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun SimScreen(
-    phonePermissionState: PermissionState,
+    readPhoneStatePermission: PermissionState,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -79,13 +80,13 @@ fun SimScreen(
             verticalArrangement = Arrangement.Top
         ) {
 
-            AnimatedVisibility(visible = phonePermissionState.status.isGranted) {
+            AnimatedVisibility(visible = readPhoneStatePermission.status.isGranted) {
                 Sims(
-                    permissionState = phonePermissionState,
+                    permissionState = readPhoneStatePermission,
                     paddingValues = paddingValues,
                 )
             }
-            AnimatedVisibility(visible = !phonePermissionState.status.isGranted) {
+            AnimatedVisibility(visible = readPhoneStatePermission.status.shouldShowRationale) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Center,
@@ -100,10 +101,10 @@ fun SimScreen(
                         )
                     )
                     Button(
-                        onClick = { phonePermissionState.launchPermissionRequest() },
+                        onClick = { readPhoneStatePermission.launchPermissionRequest() },
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        Text(stringResource(R.string.auth_permission))
+                        Text(stringResource(R.string.grant_permission))
                     }
                 }
             }
@@ -129,10 +130,10 @@ private fun Sims(
         )
     }
     LaunchedEffect(key1 = sims) {
-        val getSimsPeriodicallyService = Executors.newSingleThreadScheduledExecutor()
-        getSimsPeriodicallyService.scheduleAtFixedRate(
+        val getSimInfoPeriodicService = Executors.newSingleThreadScheduledExecutor()
+        getSimInfoPeriodicService.scheduleAtFixedRate(
             {
-                sims = getSimInfo(permissionState, context)
+                sims = sims.copy(data = getSimInfo(permissionState, context).data)
             },
             0,
             2,
