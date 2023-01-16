@@ -3,11 +3,9 @@ package com.rzmmzdh.sima.feature_sim.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.provider.Settings
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
@@ -36,8 +34,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-@RequiresApi(Build.VERSION_CODES.Q)
-@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun SimScreen(
@@ -114,8 +110,6 @@ fun SimScreen(
     }
 }
 
-@SuppressLint("MissingPermission")
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
 private fun Sims(
@@ -146,8 +140,7 @@ private fun Sims(
     }
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.8f)
+            .fillMaxSize()
             .padding(top = paddingValues.calculateTopPadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -236,7 +229,6 @@ private fun Sims(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalPermissionsApi::class)
 private fun getSimInfo(
