@@ -104,6 +104,8 @@ private fun Sims(
         )
     }
     LaunchedEffect(key1 = sims) {
+        val initialDelay: Long = 0
+        val refreshRate: Long = 2
         val getSimInfoPeriodicService = Executors.newSingleThreadScheduledExecutor()
         getSimInfoPeriodicService.scheduleAtFixedRate(
             {
@@ -114,8 +116,8 @@ private fun Sims(
                     ).data
                 )
             },
-            0,
-            2,
+            initialDelay,
+            refreshRate,
             TimeUnit.SECONDS
         )
     }
