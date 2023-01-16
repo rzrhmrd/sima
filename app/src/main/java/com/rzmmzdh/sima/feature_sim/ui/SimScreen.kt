@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.telephony.CellSignalStrength
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
@@ -251,7 +252,9 @@ private fun getSimInfo(
                     slotNumber = sub.simSlotIndex + 1,
                     carrierName = sub.carrierName.toString(),
                     signalStrength = telephonyManager.createForSubscriptionId
-                        (sub.subscriptionId).signalStrength?.cellSignalStrengths?.firstNotNullOf { (it.asuLevel * 2) - 113 }
+                        (sub.subscriptionId).signalStrength?.cellSignalStrengths?.firstNotNullOf {
+                        asuSignalToDbm(it)
+                    }
                 )
             )
         }
@@ -259,6 +262,8 @@ private fun getSimInfo(
     }
     return simInfo
 }
+
+private fun asuSignalToDbm(signalStrength: CellSignalStrength) = (signalStrength.asuLevel * 2) - 113
 
 data class SimInfo(val data: List<Sim> = emptyList(), val isLoading: Boolean = false)
 data class Sim(
