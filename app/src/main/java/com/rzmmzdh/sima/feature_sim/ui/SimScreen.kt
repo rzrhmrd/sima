@@ -7,8 +7,6 @@ import android.provider.Settings
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -140,7 +136,7 @@ private fun Sims(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
                     .height(136.dp),
                 shape = CutCornerShape(bottomStart = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = topSimBackgroundColor)
@@ -153,29 +149,9 @@ private fun Sims(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     sim.let {
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Center,
-                            horizontalAlignment = CenterHorizontally
-                        ) {
-                            SignalStrength(it.signalStrength)
-                        }
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Center,
-                            horizontalAlignment = CenterHorizontally
-                        ) {
-                            Carrier(it.carrierName)
-                        }
-                        Column(
-                            verticalArrangement = Center,
-                            horizontalAlignment = CenterHorizontally
-                        ) {
-                            SlotNumber(it.slotNumber)
-                            AnimatedVisibility(visible = (it == topSim)) {
-                                TopSimStar()
-                            }
-                        }
+                        SignalStrength(it.signalStrength)
+                        Carrier(it.carrierName)
+                        SimSlot(number = it.slotNumber, isTopSim = it == topSim)
                     }
                 }
             }
@@ -189,15 +165,26 @@ private fun Sims(
 }
 
 @Composable
-private fun SlotNumber(number: Int) {
-    Text(
-        number.toString(),
-        style = TextStyle(
-            fontFamily = vazir,
-            fontWeight = FontWeight.Bold,
-            fontSize = 22.sp
+private fun SimSlot(
+    number: Int,
+    isTopSim: Boolean
+) {
+    Column(
+        verticalArrangement = Center,
+        horizontalAlignment = CenterHorizontally
+    ) {
+        Text(
+            number.toString(),
+            style = TextStyle(
+                fontFamily = vazir,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
         )
-    )
+        AnimatedVisibility(visible = isTopSim) {
+            TopSimStar()
+        }
+    }
 }
 
 @Composable
@@ -216,12 +203,6 @@ private fun Carrier(name: String) {
 private fun SignalStrength(value: Int?) {
     Text(
         modifier = Modifier
-            .border(
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                ), shape = CutCornerShape(topStart = 16.dp)
-            )
             .padding(8.dp),
         text = "${value}\n dBm",
         style = TextStyle(
@@ -251,7 +232,7 @@ private fun Description() {
     Text(
         text = stringResource(R.string.description),
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .alpha(0.5f),
         textAlign = TextAlign.Center,
         style = TextStyle(
