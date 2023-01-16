@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val permissionState =
+            val readPhoneStatePermission =
                 rememberPermissionState(
                     android.Manifest.permission.READ_PHONE_STATE,
                 )
@@ -40,9 +40,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LaunchedEffect(key1 = permissionState) {
-                        if (!permissionState.status.isGranted) {
-                            permissionState.launchPermissionRequest()
+                    LaunchedEffect(key1 = readPhoneStatePermission) {
+                        if (!readPhoneStatePermission.status.isGranted) {
+                            readPhoneStatePermission.launchPermissionRequest()
                         }
                     }
 
@@ -52,17 +52,17 @@ class MainActivity : ComponentActivity() {
                         startDestination = Destination.SimScreen.route
                     ) {
                         composable(route = Destination.SimScreen.route) {
-                            SimScreen(readPhoneStatePermission = permissionState)
+                            SimScreen(readPhoneStatePermission = readPhoneStatePermission)
                         }
                     }
                 }
-                SetSystemUiBarsAsTransparent()
+                TransparentSystemUiBars()
             }
         }
     }
 
     @Composable
-    private fun SetSystemUiBarsAsTransparent() {
+    private fun TransparentSystemUiBars() {
         val systemUiController = rememberSystemUiController()
         val useDarkIcons = !isSystemInDarkTheme()
 
