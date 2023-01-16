@@ -209,8 +209,6 @@ private fun Carrier(name: String) {
 @Composable
 private fun SignalStrength(value: Int?) {
     Text(
-        modifier = Modifier
-            .padding(8.dp),
         text = "${value}\n dBm",
         style = TextStyle(
             textDirection = TextDirection.Ltr,
@@ -218,19 +216,6 @@ private fun SignalStrength(value: Int?) {
             fontSize = 16.sp,
         ), textAlign = TextAlign.Center
 
-    )
-}
-
-@Composable
-private fun TopSimStar() {
-    Text(
-        modifier = Modifier,
-        text = "⭐",
-        style = TextStyle(
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Normal,
-            fontFamily = vazir, shadow = Shadow(blurRadius = 0.5f)
-        )
     )
 }
 
