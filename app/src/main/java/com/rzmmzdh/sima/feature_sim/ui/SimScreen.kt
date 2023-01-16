@@ -182,6 +182,7 @@ private fun Sims(
 
         }
         item {
+            Divider(modifier = Modifier.padding(horizontal = 34.dp, vertical = 16.dp))
             Description()
         }
     }
