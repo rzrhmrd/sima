@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Sima</string>
+    <string name="auth_permission">تایید دسترسی</string>
+    <string name="permission_rationale">این برنامه برای فعالیت نیاز به اجازه دسترسی دارد. 😀</string>
+    <string name="select_sim">انتخاب سیم</string>
+    <string name="sima">سیما</string>
 </resources>
