@@ -8,11 +8,14 @@ import android.telephony.CellSignalStrength
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -193,7 +196,14 @@ private fun Carrier(sim: Sim) {
 @Composable
 private fun SignalStrength(sim: Sim) {
     Text(
-        modifier = Modifier,
+        modifier = Modifier
+            .border(
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ), shape = RoundedCornerShape(16.dp)
+            )
+            .padding(8.dp),
         text = "${sim.signalStrength}\n dBm",
         style = TextStyle(
             textDirection = TextDirection.Ltr,
