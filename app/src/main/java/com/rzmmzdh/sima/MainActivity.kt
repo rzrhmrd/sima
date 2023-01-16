@@ -60,15 +60,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+    @Composable
+    private fun HideSystemUi() {
+        val systemUiController = rememberSystemUiController()
+        val useDarkIcons = !isSystemInDarkTheme()
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    SimaTheme {
-        Greeting("Android")
+        DisposableEffect(systemUiController, useDarkIcons) {
+            systemUiController.setSystemBarsColor(
+                color = Color.Transparent,
+                darkIcons = useDarkIcons
+            )
+            onDispose {}
+        }
     }
 }
