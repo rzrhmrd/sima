@@ -7,6 +7,8 @@ import android.provider.Settings
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -169,22 +172,22 @@ private fun SimSlot(
     number: Int,
     isTopSim: Boolean
 ) {
-    Column(
-        verticalArrangement = Center,
-        horizontalAlignment = CenterHorizontally
-    ) {
-        Text(
-            number.toString(),
-            style = TextStyle(
-                fontFamily = vazir,
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp
+    val topSimBorder =
+        if (isTopSim) BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        else BorderStroke(width = 0.dp, color = Color.Transparent)
+    Text(
+        modifier = Modifier
+            .border(
+                border = topSimBorder, shape = CutCornerShape(topStart = 12.dp)
             )
+            .padding(16.dp),
+        text = number.toString(),
+        style = TextStyle(
+            fontFamily = vazir,
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp
         )
-        AnimatedVisibility(visible = isTopSim) {
-            TopSimStar()
-        }
-    }
+    )
 }
 
 @Composable
