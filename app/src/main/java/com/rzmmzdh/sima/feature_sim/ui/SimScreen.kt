@@ -253,7 +253,7 @@ private fun SelectSimFab(context: Context) {
             Text(
                 text = stringResource(R.string.select_sim),
                 fontFamily = vazir,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             )
         })
