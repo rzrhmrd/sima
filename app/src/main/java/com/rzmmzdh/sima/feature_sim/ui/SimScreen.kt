@@ -256,8 +256,8 @@ private fun Description() {
         style = TextStyle(
             textDirection = TextDirection.Rtl,
             fontFamily = vazir,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
+            fontWeight = FontWeight.Light,
+            fontSize = 12.sp,
         )
     )
 }
