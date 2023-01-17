@@ -188,34 +188,6 @@ private fun Sims(
 }
 
 @Composable
-fun QualityLevel(level: String, isTopSim: Boolean) {
-    val borderColor =
-        if (isTopSim) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-    Text(
-        level,
-        modifier = Modifier
-            .border(
-                border = BorderStroke(
-                    1.dp,
-                    color = borderColor
-                ), shape = RoundedCornerShape(24.dp)
-            )
-            .padding(4.dp),
-        fontSize = 16.sp,
-    )
-}
-
-private fun qualityLevelName(level: Int?) =
-    when (level) {
-        SIGNAL_STRENGTH_GOOD -> "خوب"
-        SIGNAL_STRENGTH_GREAT -> "عالی"
-        SIGNAL_STRENGTH_MODERATE -> "متوسط"
-        SIGNAL_STRENGTH_NONE_OR_UNKNOWN -> "قطع"
-        SIGNAL_STRENGTH_POOR -> "ضعیف"
-        else -> "نامشخص"
-    }
-
-@Composable
 fun NetworkType(networkType: String) {
     Text(networkType, fontSize = 16.sp)
 }
@@ -259,6 +231,34 @@ private fun SlotNumber(
         )
     )
 }
+
+@Composable
+fun QualityLevel(level: String, isTopSim: Boolean) {
+    val borderColor =
+        if (isTopSim) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+    Text(
+        level,
+        modifier = Modifier
+            .border(
+                border = BorderStroke(
+                    1.dp,
+                    color = borderColor
+                ), shape = RoundedCornerShape(24.dp)
+            )
+            .padding(4.dp),
+        fontSize = 16.sp,
+    )
+}
+
+private fun qualityLevelName(level: Int?) =
+    when (level) {
+        SIGNAL_STRENGTH_GOOD -> "خوب"
+        SIGNAL_STRENGTH_GREAT -> "عالی"
+        SIGNAL_STRENGTH_MODERATE -> "متوسط"
+        SIGNAL_STRENGTH_NONE_OR_UNKNOWN -> "قطع"
+        SIGNAL_STRENGTH_POOR -> "ضعیف"
+        else -> "نامشخص"
+    }
 
 @Composable
 private fun Carrier(name: String) {
