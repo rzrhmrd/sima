@@ -139,7 +139,8 @@ private fun Sims(
         items(simsSortedByStrength, key = { it.slotNumber }) { sim ->
             val topSim = simsSortedByStrength.first()
             val topSimBackgroundColor =
-                if (sim == topSim) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                if (sim == topSim) MaterialTheme.colorScheme.tertiaryContainer
+                else MaterialTheme.colorScheme.surfaceVariant
 
             Card(
                 modifier = Modifier
@@ -236,7 +237,8 @@ private fun SlotNumber(
 @Composable
 fun QualityLevel(level: String, isTopSim: Boolean) {
     val borderColor =
-        if (isTopSim) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+        if (isTopSim) MaterialTheme.colorScheme.onTertiaryContainer
+        else MaterialTheme.colorScheme.onSurfaceVariant
     Text(
         level,
         modifier = Modifier
@@ -244,9 +246,9 @@ fun QualityLevel(level: String, isTopSim: Boolean) {
                 border = BorderStroke(
                     1.dp,
                     color = borderColor
-                ), shape = RoundedCornerShape(24.dp)
+                ), shape = CutCornerShape(bottomStart = 8.dp)
             )
-            .padding(4.dp),
+            .padding(8.dp),
         fontSize = 16.sp,
     )
 }
