@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.telephony.CellSignalStrength.*
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
@@ -16,13 +17,13 @@ import androidx.compose.foundation.layout.Arrangement.SpaceEvenly
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -164,22 +165,59 @@ private fun Sims(
                             Carrier(it.carrierName)
                             NetworkType(networkTypeName(it.networkType))
                         }
-                        SimSlot(number = it.slotNumber, isTopSim = it == topSim)
+                        Column(
+                            verticalArrangement = Center,
+                            horizontalAlignment = CenterHorizontally
+                        ) {
+                            SlotNumber(number = it.slotNumber)
+                            QualityLevel(qualityLevelName(it.qualityLevel), it == topSim)
+                        }
                     }
                 }
             }
 
         }
         item {
-            Divider(modifier = Modifier.padding(horizontal = 34.dp, vertical = 16.dp))
+            Divider(
+                modifier = Modifier.padding(horizontal = 34.dp, vertical = 16.dp),
+                thickness = 1.dp
+            )
             Description()
         }
     }
 }
 
 @Composable
+fun QualityLevel(level: String, isTopSim: Boolean) {
+    val borderColor =
+        if (isTopSim) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+    Text(
+        level,
+        modifier = Modifier
+            .border(
+                border = BorderStroke(
+                    1.dp,
+                    color = borderColor
+                ), shape = RoundedCornerShape(24.dp)
+            )
+            .padding(4.dp),
+        fontSize = 16.sp,
+    )
+}
+
+private fun qualityLevelName(level: Int?) =
+    when (level) {
+        SIGNAL_STRENGTH_GOOD -> "خوب"
+        SIGNAL_STRENGTH_GREAT -> "عالی"
+        SIGNAL_STRENGTH_MODERATE -> "متوسط"
+        SIGNAL_STRENGTH_NONE_OR_UNKNOWN -> "قطع"
+        SIGNAL_STRENGTH_POOR -> "ضعیف"
+        else -> "نامشخص"
+    }
+
+@Composable
 fun NetworkType(networkType: String) {
-    Text(networkType)
+    Text(networkType, fontSize = 16.sp)
 }
 
 private fun networkTypeName(type: Int) =
@@ -208,27 +246,16 @@ private fun networkTypeName(type: Int) =
     }
 
 @Composable
-private fun SimSlot(
+private fun SlotNumber(
     number: Int,
-    isTopSim: Boolean
 ) {
-    val topSimBorder =
-        if (isTopSim) BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.onTertiaryContainer
-        )
-        else BorderStroke(width = 0.dp, color = Color.Transparent)
     Text(
-        modifier = Modifier
-            .border(
-                border = topSimBorder, shape = CutCornerShape(topStart = 12.dp)
-            )
-            .padding(16.dp),
+        modifier = Modifier,
         text = number.toString(),
         style = TextStyle(
             fontFamily = vazir,
             fontWeight = FontWeight.Bold,
-            fontSize = 22.sp, textAlign = TextAlign.Center
+            fontSize = 20.sp, textAlign = TextAlign.Center
         )
     )
 }
@@ -301,7 +328,7 @@ private fun GrantPermissionRationale(onGrantPermission: () -> Unit) {
 
 @Composable
 private fun SelectSimFab(onClick: () -> Unit) {
-    ExtendedFloatingActionButton(shape = CutCornerShape(bottomStart = 20.dp),
+    ExtendedFloatingActionButton(shape = CutCornerShape(bottomStart = 16.dp),
         onClick = { onClick() },
         icon = { },
         text = {
@@ -335,10 +362,10 @@ private fun simStatus(
                     slotNumber = sub.simSlotIndex + 1,
                     carrierName = sub.carrierName.toString(),
                     networkType = telephonyManager.createForSubscriptionId(sub.subscriptionId).dataNetworkType,
-                    signalStrength = telephonyManager.createForSubscriptionId
-                        (sub.subscriptionId).signalStrength?.cellSignalStrengths?.firstNotNullOf {
-                        it.dbm
-                    }
+                    qualityLevel = telephonyManager.createForSubscriptionId(sub.subscriptionId)
+                        .signalStrength?.cellSignalStrengths?.firstNotNullOf { it.level },
+                    signalStrength = telephonyManager.createForSubscriptionId(sub.subscriptionId)
+                        .signalStrength?.cellSignalStrengths?.firstNotNullOf { it.dbm }
                 )
             )
         }
