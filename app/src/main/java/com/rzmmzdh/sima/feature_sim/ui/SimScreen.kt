@@ -38,6 +38,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import com.rzmmzdh.sima.R
 import com.rzmmzdh.sima.feature_sim.core.theme.vazir
+import com.rzmmzdh.sima.feature_sim.model.Sim
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

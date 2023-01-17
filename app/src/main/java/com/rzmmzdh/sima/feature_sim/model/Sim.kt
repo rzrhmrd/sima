@@ -1,4 +1,4 @@
-package com.rzmmzdh.sima.feature_sim.ui
+package com.rzmmzdh.sima.feature_sim.model
 
 data class Sim(
     val subId: Int = 0,
