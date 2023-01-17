@@ -153,7 +153,7 @@ private fun Sims(
                         .fillMaxSize()
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Center
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     sim.let {
                         SignalStrength(it.signalStrength)
@@ -182,27 +182,29 @@ fun NetworkType(networkType: String) {
     Text(networkType)
 }
 
-fun networkTypeName(type: Int) =
+private fun networkTypeName(type: Int) =
     when (type) {
-        TelephonyManager.NETWORK_TYPE_1xRTT -> "1xRTT"
-        TelephonyManager.NETWORK_TYPE_CDMA -> "CDMA"
-        TelephonyManager.NETWORK_TYPE_EDGE -> "EDGE"
-        TelephonyManager.NETWORK_TYPE_EHRPD -> "eHRPD"
-        TelephonyManager.NETWORK_TYPE_EVDO_0 -> "EVDO rev. 0"
-        TelephonyManager.NETWORK_TYPE_EVDO_A -> "EVDO rev. A"
-        TelephonyManager.NETWORK_TYPE_EVDO_B -> "EVDO rev. B"
         TelephonyManager.NETWORK_TYPE_GPRS -> "GPRS"
-        TelephonyManager.NETWORK_TYPE_HSDPA -> "HSDPA"
-        TelephonyManager.NETWORK_TYPE_HSPA -> "HSPA"
-        TelephonyManager.NETWORK_TYPE_HSPAP -> "HSPA+"
-        TelephonyManager.NETWORK_TYPE_HSUPA -> "HSUPA"
-        TelephonyManager.NETWORK_TYPE_IDEN -> "iDen"
-        TelephonyManager.NETWORK_TYPE_LTE -> "LTE"
+        TelephonyManager.NETWORK_TYPE_EDGE -> "EDGE"
         TelephonyManager.NETWORK_TYPE_UMTS -> "UMTS"
-        TelephonyManager.NETWORK_TYPE_UNKNOWN -> "Unknown"
-        else -> {
-            "Unkown"
-        }
+        TelephonyManager.NETWORK_TYPE_CDMA -> "CDMA"
+        TelephonyManager.NETWORK_TYPE_EVDO_0 -> "EVDO revision 0"
+        TelephonyManager.NETWORK_TYPE_EVDO_A -> "EVDO revision A"
+        TelephonyManager.NETWORK_TYPE_1xRTT -> "1xRTT"
+        TelephonyManager.NETWORK_TYPE_HSDPA -> "HSDPA"
+        TelephonyManager.NETWORK_TYPE_HSUPA -> "HSUPA"
+        TelephonyManager.NETWORK_TYPE_HSPA -> "HSPA"
+        TelephonyManager.NETWORK_TYPE_IDEN -> "IDEN"
+        TelephonyManager.NETWORK_TYPE_EVDO_B -> "EVDO revision B"
+        TelephonyManager.NETWORK_TYPE_LTE -> "LTE"
+        TelephonyManager.NETWORK_TYPE_EHRPD -> "eHRPD"
+        TelephonyManager.NETWORK_TYPE_HSPAP -> "HSPA+"
+        TelephonyManager.NETWORK_TYPE_GSM -> "GSM"
+        TelephonyManager.NETWORK_TYPE_TD_SCDMA -> "TD_SDMA"
+        TelephonyManager.NETWORK_TYPE_IWLAN -> "IWLAN"
+        TelephonyManager.NETWORK_TYPE_NR -> "NR (New Radio) 5G"
+        TelephonyManager.NETWORK_TYPE_UNKNOWN -> "unkown"
+        else -> "unkown"
     }
 
 @Composable
