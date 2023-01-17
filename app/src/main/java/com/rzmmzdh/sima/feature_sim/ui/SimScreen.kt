@@ -301,7 +301,7 @@ private fun simStatus(
                     carrierName = sub.carrierName.toString(),
                     signalStrength = telephonyManager.createForSubscriptionId
                         (sub.subscriptionId).signalStrength?.cellSignalStrengths?.firstNotNullOf {
-                        asuLevelToDbm(it.asuLevel)
+                        it.dbm
                     }
                 )
             )
@@ -310,5 +310,3 @@ private fun simStatus(
     }
     return simStatus
 }
-
-private fun asuLevelToDbm(asuLevel: Int) = (asuLevel * 2) - 113
