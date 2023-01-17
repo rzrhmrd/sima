@@ -8,6 +8,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
@@ -91,6 +92,7 @@ private fun SimaAppBar() {
         })
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Sims(
     isPermissionGranted: Boolean,
@@ -132,8 +134,9 @@ private fun Sims(
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        items(sims.data) { sim ->
-            val topSim = sims.data.sortedByDescending { it.signalStrength }.first()
+        val simsSortedByStrength = sims.data.sortedByDescending { it.signalStrength }
+        items(simsSortedByStrength, key = { it.slotNumber }) { sim ->
+            val topSim = simsSortedByStrength.first()
             val topSimBackgroundColor =
                 if (sim == topSim) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant
 
@@ -141,7 +144,8 @@ private fun Sims(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 6.dp)
-                    .height(136.dp),
+                    .height(136.dp)
+                    .animateItemPlacement(),
                 shape = CutCornerShape(bottomStart = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = topSimBackgroundColor)
             ) {
@@ -189,7 +193,7 @@ private fun SimSlot(
         style = TextStyle(
             fontFamily = vazir,
             fontWeight = FontWeight.Bold,
-            fontSize = 22.sp
+            fontSize = 22.sp, textAlign = TextAlign.Center
         )
     )
 }
