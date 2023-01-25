@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Sima</string>
     <string name="grant_permission">تایید دسترسی</string>
-    <string name="permission_rationale">سیما برای اجرا نیاز به اجازه دسترسی دارد.</string>
+    <string name="permission_rationale"> برای ارائه خدمات نیاز به اجازه دسترسی داریم.
+        به حریم خصوصی شما احترام میگذاریم و هیچ وقت از این اطلاعات برای شناسایی شما و یا تبلیغات استفاده نخواهیم کرد.</string>
     <string name="select_sim">انتخاب سیم</string>
     <string name="sima">سیما</string>
     <string name="description">بهترین سیم از نظر قدرت آنتن دهی در لحظه با رنگ سبز مشخص می شود.

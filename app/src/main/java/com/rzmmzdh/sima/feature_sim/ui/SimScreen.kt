@@ -51,28 +51,33 @@ fun SimScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarScope = rememberCoroutineScope()
+    val fabVisibility = remember {
+        mutableStateOf(
+            readPhoneStatePermission.status.isGranted
+        )
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { SimaAppBar() },
         floatingActionButton = {
-            SelectSimFab {
-                context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS))
-            }
+            SelectSimFab { context.startActivity(Intent(Settings.ACTION_DATA_ROAMING_SETTINGS)) }
         }) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            AnimatedVisibility(visible = readPhoneStatePermission.status.shouldShowRationale || !readPhoneStatePermission.status.isGranted) {
+                GrantPermissionRationale {
+                    readPhoneStatePermission.launchPermissionRequest()
+                }
+            }
             AnimatedVisibility(visible = readPhoneStatePermission.status.isGranted) {
                 Sims(
                     isPermissionGranted = readPhoneStatePermission.status.isGranted,
                     paddingValues = paddingValues
                 )
-            }
-            AnimatedVisibility(visible = readPhoneStatePermission.status.shouldShowRationale) {
-                GrantPermissionRationale { readPhoneStatePermission.launchPermissionRequest() }
             }
         }
     }
@@ -308,7 +313,9 @@ private fun Description() {
 @Composable
 private fun GrantPermissionRationale(onGrantPermission: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Center,
         horizontalAlignment = CenterHorizontally,
     ) {
@@ -317,14 +324,23 @@ private fun GrantPermissionRationale(onGrantPermission: () -> Unit) {
             style = TextStyle(
                 textDirection = TextDirection.Rtl,
                 fontFamily = vazir,
-                fontSize = 16.sp
+                fontSize = 16.sp, textAlign = TextAlign.Center
             )
         )
-        Button(
+        OutlinedButton(
             onClick = { onGrantPermission() },
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .padding(8.dp).fillMaxWidth(),
+            shape = CutCornerShape(bottomStart = 16.dp),
         ) {
-            Text(stringResource(R.string.grant_permission))
+            Text(
+                stringResource(R.string.grant_permission),
+                style = TextStyle(
+                    fontFamily = vazir,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+            )
         }
     }
 }
