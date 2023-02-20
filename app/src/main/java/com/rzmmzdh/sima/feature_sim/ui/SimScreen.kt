@@ -251,7 +251,7 @@ fun QualityLevel(level: String, isTopSim: Boolean) {
                 border = BorderStroke(
                     1.dp,
                     color = borderColor
-                ), shape = CutCornerShape(bottomStart = 8.dp)
+                ), shape = RoundedCornerShape(24.dp)
             )
             .padding(8.dp),
         fontSize = 16.sp,
@@ -263,9 +263,9 @@ private fun qualityLevelName(level: Int?) =
         SIGNAL_STRENGTH_GOOD -> "خوب"
         SIGNAL_STRENGTH_GREAT -> "عالی"
         SIGNAL_STRENGTH_MODERATE -> "متوسط"
-        SIGNAL_STRENGTH_NONE_OR_UNKNOWN -> "قطع"
         SIGNAL_STRENGTH_POOR -> "ضعیف"
-        else -> "نامشخص"
+        SIGNAL_STRENGTH_NONE_OR_UNKNOWN -> "قطع"
+        else -> "قطع"
     }
 
 @Composable
@@ -330,7 +330,8 @@ private fun GrantPermissionRationale(onGrantPermission: () -> Unit) {
         OutlinedButton(
             onClick = { onGrantPermission() },
             modifier = Modifier
-                .padding(8.dp).fillMaxWidth(),
+                .padding(8.dp)
+                .fillMaxWidth(),
             shape = CutCornerShape(bottomStart = 16.dp),
         ) {
             Text(
