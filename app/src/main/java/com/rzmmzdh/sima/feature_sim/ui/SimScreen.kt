@@ -8,6 +8,7 @@ import android.telephony.CellSignalStrength.*
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -253,7 +254,8 @@ fun QualityLevel(level: String, isTopSim: Boolean) {
                     color = borderColor
                 ), shape = RoundedCornerShape(24.dp)
             )
-            .padding(8.dp),
+            .padding(8.dp)
+            .animateContentSize(),
         fontSize = 16.sp,
     )
 }
